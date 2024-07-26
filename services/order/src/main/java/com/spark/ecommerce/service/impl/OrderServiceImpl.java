@@ -9,6 +9,8 @@ import com.spark.ecommerce.entity.OrderLine;
 import com.spark.ecommerce.exception.BusinessException;
 import com.spark.ecommerce.kafka.OrderConfirmation;
 import com.spark.ecommerce.kafka.OrderProducer;
+import com.spark.ecommerce.payment.PaymentClient;
+import com.spark.ecommerce.payment.PaymentRequest;
 import com.spark.ecommerce.product.ProductClient;
 import com.spark.ecommerce.repository.OrderRepository;
 import com.spark.ecommerce.service.IOrderLineService;
@@ -43,6 +45,9 @@ public class OrderServiceImpl implements IOrderService {
     @Autowired
     private OrderProducer orderProducer;
 
+    @Autowired
+    private PaymentClient paymentClient;
+
     @Override
     public Integer createOrder(OrderRequest request) {
 
@@ -71,6 +76,14 @@ public class OrderServiceImpl implements IOrderService {
 
 
         //start payment process
+        var paymentRequest = new PaymentRequest(
+                request.amount(),
+                request.paymentMethod(),
+                order.getId(),
+                order.getReference(),
+                customer
+        );
+        paymentClient.requestOrderPayment(paymentRequest);
 
         //send the order confirmation --> notification-ms(kafka)
         orderProducer.sendOrderConfirmation(
