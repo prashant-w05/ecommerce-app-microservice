@@ -1,6 +1,7 @@
 package com.spark.ecommerce.util;
 
 import com.spark.ecommerce.dto.OrderLineRequest;
+import com.spark.ecommerce.dto.OrderLineResponse;
 import com.spark.ecommerce.entity.Order;
 import com.spark.ecommerce.entity.OrderLine;
 import org.springframework.stereotype.Component;
@@ -18,5 +19,9 @@ public class OrderLineMapper {
                 )
                 .productId(orderLineRequest.productId())
                 .build();
+    }
+
+    public OrderLineResponse fromOrderLine(OrderLine orderLine) {
+        return new OrderLineResponse(orderLine.getId(), orderLine.getQuantity());
     }
 }

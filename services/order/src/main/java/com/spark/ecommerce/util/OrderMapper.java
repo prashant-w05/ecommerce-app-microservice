@@ -1,6 +1,7 @@
 package com.spark.ecommerce.util;
 
 import com.spark.ecommerce.dto.OrderRequest;
+import com.spark.ecommerce.dto.OrderResponse;
 import com.spark.ecommerce.entity.Order;
 import org.springframework.stereotype.Component;
 
@@ -15,5 +16,16 @@ public class OrderMapper {
                 .totalAmount(request.amount())
                 .paymentMethod(request.paymentMethod())
                 .build();
+    }
+
+    public OrderResponse fromOrder(Order order) {
+
+        return new OrderResponse(
+                order.getId(),
+                order.getReference(),
+                order.getTotalAmount(),
+                order.getPaymentMethod(),
+                order.getCustomerId()
+        );
     }
 }

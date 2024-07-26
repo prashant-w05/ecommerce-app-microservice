@@ -3,6 +3,7 @@ package com.spark.ecommerce.service.impl;
 import com.spark.ecommerce.customer.CustomerClient;
 import com.spark.ecommerce.dto.OrderLineRequest;
 import com.spark.ecommerce.dto.OrderRequest;
+import com.spark.ecommerce.dto.OrderResponse;
 import com.spark.ecommerce.dto.PurchaseRequest;
 import com.spark.ecommerce.entity.OrderLine;
 import com.spark.ecommerce.exception.BusinessException;
@@ -13,9 +14,13 @@ import com.spark.ecommerce.repository.OrderRepository;
 import com.spark.ecommerce.service.IOrderLineService;
 import com.spark.ecommerce.service.IOrderService;
 import com.spark.ecommerce.util.OrderMapper;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.ws.rs.core.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderServiceImpl implements IOrderService {
@@ -79,5 +84,20 @@ public class OrderServiceImpl implements IOrderService {
         );
 
         return order.getId();
+    }
+
+    @Override
+    public List<OrderResponse> findAll() {
+        return orderRepository.findAll()
+                .stream()
+                .map(orderMapper::fromOrder)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public OrderResponse findById(Integer orderId) {
+        return orderRepository.findById(orderId)
+                .map(orderMapper::fromOrder)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("No order found with the provided Id: %d", orderId)));
     }
 }
