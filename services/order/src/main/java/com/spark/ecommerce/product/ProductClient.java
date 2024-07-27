@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @FeignClient(
-        name="customer-service",
+        name="product-service",
         url="${application.config.product-url}"
 )
 public interface ProductClient {
